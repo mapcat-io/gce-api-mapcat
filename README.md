@@ -21,4 +21,4 @@ In order to run the server locally, you must follow these steps:
 - Run `node server.js`.
 - Verify it's working by visiting `http://localhost:3911/`.
 
-To test that a query is available, visit something like `http://localhost:3911/?lat=37.7557675&long=-122.4246298&q=pizza`.
+To test that a query is available, visit something like `http://localhost:3911/api/v2/items?lat=37.7557675&long=-122.4246298&q=pizza`.
