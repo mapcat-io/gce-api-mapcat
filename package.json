@@ -13,6 +13,7 @@
     "crate-connect": "^0.1.51",
     "dotenv": "^2.0.0",
     "express": "^4.14.0",
+    "foursquarevenues": "^2.0.0",
     "fs": "0.0.1-security",
     "md5": "^2.2.1",
     "moment": "^2.16.0",

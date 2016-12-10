@@ -7,8 +7,7 @@ var async = require('async'),
 var db = initCrate();
 
 var queries = {
-  getItems: db.Query('select *, distance(location, [$1, $2]) as distance_in_meters from items_big where (itm_name like $3 or cat_name like $3 or loc_name like $3) and distance(location, [$1, $2]) <  4828 order by distance_in_meters limit 100'),
-  getSomeStuff:  db.Query('select * FROM items_big LIMIT 10'),
+  getItems: db.Query('select *, distance(location, [$1, $2]) as distance_in_meters from items_big where (itm_name like $3 or cat_name like $3 or loc_name like $3) and distance(location, [$1, $2]) <  4828 order by distance_in_meters limit 100')
 };
 
 exports = module.exports = function(req, res) {
@@ -16,9 +15,9 @@ exports = module.exports = function(req, res) {
   var items_returned;
 
   var q = '%'+req.query.q+'%' || '', // search term
-    u = req.query.u || '', // ios deviceId
-    lat = req.query.lat || '',
-  lng = req.query.long || '';
+      u = req.query.u || '', // ios deviceId
+      lat = req.query.lat || '',
+      lng = req.query.long || '';
 
 
 
@@ -26,7 +25,7 @@ exports = module.exports = function(req, res) {
       // Get the first table contents
       function ( callback ) {
 
-      queries.getItems.execute([parseFloat(lng),parseFloat(lat),q],function(err,res){
+      queries.getItems.execute([parseFloat(lng), parseFloat(lat), q],function(err,res){
 
         if(err) {
         //console.log(err.statusCode);
