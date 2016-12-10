@@ -1,4 +1,4 @@
-var Crate = require('crate-connect');
+var Crate = require('cratejs');
 
 initCrate = function () {
   console.log('Initializing Crate DB.');

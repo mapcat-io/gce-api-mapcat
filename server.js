@@ -1,3 +1,5 @@
+var bodyParser = require('body-parser');
+
 // Load .env variables
 require('dotenv').load();
 
@@ -5,6 +7,8 @@ require('dotenv').load();
 var express = require('express'),
     app = express(),
     port = process.env.PORT || 3911;
+
+app.use( bodyParser.json() );
 
 // Import routes
 var routes = {

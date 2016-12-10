@@ -2,8 +2,6 @@ var async = require('async'),
     Crate = require('../../crate.js'),
     md5 = require('md5');
 
-// initializes Crate DB
-// TODO: Move db initialization code to middleware
 var db = initCrate();
 
 var queries = {
@@ -19,8 +17,6 @@ exports = module.exports = function(req, res) {
       lat = req.query.lat || '',
       lng = req.query.long || '';
 
-
-
   async.series( [
       // Get the first table contents
       function ( callback ) {
@@ -33,10 +29,8 @@ exports = module.exports = function(req, res) {
 
       if(res!=null)
       {
-
         //console.log(res.rows);
         items_returned = res.rows;
-
       }
       else
       {
