@@ -1,16 +1,16 @@
 var Crate = require('../../crate.js');
 
-// TODO: return array of objects not an array of arrays.
 var db = initCrate(),
-    topThingsTable = db.Query('SELECT * FROM top_things LIMIT 1000');
+    query = db.Query('SELECT * FROM top_things LIMIT 1000');
 
 exports = module.exports = function(req, res) {
 
-  topThingsTable.execute(function(err, response) {
+  query.execute(function(err, response) {
     if (err) {
-      console.log('Error retrieving top_things: ' + JSON.stringify(err));
+      var message = 'Error retrieving top_things: ' + JSON.stringify(err);
+      console.log(message);
       res.json({
-        response: 'Error retrieving top_things: ' + JSON.stringify(err)
+        response: message
       });
     } else {
       console.log('Retrieved top_things.');

@@ -1,7 +1,7 @@
 var Crate = require('../../crate.js');
 
 var db = initCrate(),
-    feedbackTable = db.Insert('feedback');
+    insert = db.Insert('feedback');
 
 exports = module.exports = function(req, res) {
   if (req.method == 'POST') {
@@ -12,11 +12,12 @@ exports = module.exports = function(req, res) {
       "feeling": data.feeling,
       "note": data.note
     };
-    feedbackTable.data(obj).run(function(err, response) {
+    insert.data(obj).run(function(err, response) {
       if (err) {
-        console.log('Error saving feedback: ' + JSON.stringify(err));
+        var message = 'Error saving feedback: ' + JSON.stringify(err);
+        console.log(message);
         res.json({
-          response: 'Error saving feedback: ' + JSON.stringify(err)
+          response: message
         });
       } else {
         console.log('Saved feedback.');

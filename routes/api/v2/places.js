@@ -16,11 +16,15 @@ exports = module.exports = function(req, res) {
   };
 
   foursquare.getVenues(params, function(error, venues) {
-    if (!error) {
-      res.json(venues.response);
+    if (error) {
+      var message = 'Error retrieving nearby places: ' + error;
+      console.log(message);
+      res.json({
+        response: message
+      });
     } else {
-      res.json(error);
-    }
+      res.json(venues.response);
+    };
   });
 
 };
