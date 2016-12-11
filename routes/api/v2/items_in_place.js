@@ -5,9 +5,9 @@ var db = initCrate(),
 
 exports = module.exports = function(req, res) {
 
-  var data = req.query;
-
-  var params = [data.q.toLowerCase()];
+  var data = req.query,
+      params = [data.q.toLowerCase()];
+      
   query.execute(params, function(err, response) {
     if (err) {
       var message = 'Error retrieving items in place: ' + JSON.stringify(err);
