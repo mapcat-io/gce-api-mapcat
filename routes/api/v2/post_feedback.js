@@ -14,9 +14,9 @@ exports = module.exports = function(req, res) {
     };
     feedbackTable.data(obj).run(function(err, response) {
       if (err) {
-        console.log('Error saving feedback: ' + err);
+        console.log('Error saving feedback: ' + JSON.stringify(err));
         res.json({
-          response: 'Error saving feedback: ' + err
+          response: 'Error saving feedback: ' + JSON.stringify(err)
         });
       } else {
         console.log('Saved feedback.');
