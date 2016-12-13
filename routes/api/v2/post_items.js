@@ -48,7 +48,7 @@ exports = module.exports = function(req, res) {
       obj["j"] = JSON.stringify(j);
       itemsToSave.push(obj);
     };
-    
+
     insert.data(itemsToSave).run(function(err, response) {
       if (err) {
         var message = 'Error saving items: ' + JSON.stringify(err);
