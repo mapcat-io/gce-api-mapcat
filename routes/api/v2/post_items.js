@@ -1,27 +1,53 @@
-var Crate = require('../../crate.js');
+var Crate = require('../../crate.js'),
+    utils = require('../../utils');
 
 var db = initCrate(),
     insert = db.Insert('items_big');
-
-var uniqueId = function () {
-  // Math.random should be unique because of its seeding algorithm.
-  // Convert it to base 36 (numbers + letters), and grab the first 9 characters
-  // after the decimal.
-  return '_' + Math.random().toString(36).substr(2, 34);
-};
 
 exports = module.exports = function(req, res) {
   if (req.method == 'POST') {
     var data = (req.method == 'POST') ? req.body : req.query,
         itemsToSave = [];
 
+        console.log(data);
+
     for (var key in data.items) {
+      var uuid = utils.uuid();
       var obj = {
-        id: uniqueId(),
-        itm_name: data.items[key],
-        loc_name: data.foursquare.name,
-        location: [data.foursquare.location.lng, data.foursquare.location.lat]
+          "id": uuid,
+          "itm_name": data.items[key],
+          "loc_name": data.foursquare.name,
+          "location": [data.foursquare.location.lng, data.foursquare.location.lat]
+        };
+      var j = {
+        "_id": {
+          "$oid": uuid
+        },
+        "name": data.items[key],
+        "loc": {
+          "type": "Point",
+          "coordinates": [data.foursquare.location.lng,data.foursquare.location.lat]
+        },
+        "location": {
+          "name": data.foursquare.name,
+          "foursquareId": data.foursquare.id,
+          "street": data.foursquare.location.address,
+          "postalCode": data.foursquare.location.postalCode,
+          "city": data.foursquare.location.city,
+          "state": data.foursquare.location.state,
+          "country": data.foursquare.location.country,
+          "phone": data.foursquare.contact.phone,
+          "twitterId": data.foursquare.contact.twitter,
+          "facebookId": data.foursquare.contact.facebook,
+          "categoryName": data.foursquare.categories[0].name,
+          "siteUrl": data.foursquare.url
+        },
+        "source": {
+          "name": data.source.name,
+          "deviceId": data.source.deviceId || ''
+        }
       };
+      obj["j"] = JSON.stringify(j);
       itemsToSave.push(obj);
     };
     console.log(itemsToSave);
@@ -43,46 +69,4 @@ exports = module.exports = function(req, res) {
   } else {
     res.json({response: 'Post new items endpoint.'});
   }
-}
-
-// { foursquare:
-//    { verified: true,
-//      venueChains: [],
-//      url: 'http://visitunionsquaresf.com',
-//      stats: { tipCount: 406, checkinsCount: 141432, usersCount: 75176 },
-//      categories: [ [Object] ],
-//      storeId: '',
-//      contact:
-//       { formattedPhone: '(415) 781-7880',
-//         twitter: 'unionsquaresf',
-//         facebookName: 'Union Square, San Francisco',
-//         phone: '4157817880',
-//         facebookUsername: 'UnionSquareSF',
-//         facebook: '213604681983905' },
-//      location:
-//       { postalCode: '94108',
-//         distance: 72,
-//         address: '333 Post St',
-//         crossStreet: 'btwn Post, Stockton, Geary & Powell St.',
-//         city: 'San Francisco',
-//         formattedAddress: [Object],
-//         state: 'CA',
-//         lat: 37.78782954496378,
-//         lng: -122.4076614126047,
-//         cc: 'US',
-//         country: 'United States' },
-//      specials: { count: 0, items: [] },
-//      referralId: 'v-1481502731',
-//      name: 'Union Square',
-//      hasPerk: false,
-//      id: '40bbc700f964a520b1001fe3',
-//      beenHere: { lastCheckinExpiredAt: 0 },
-//      hereNow: { count: 9, summary: '9 people are here', groups: [Object] },
-//      venuePage: { id: '34303229' } },
-//   items:
-//    { AddItem1: 'One',
-//      'Test Category': 'Test Category',
-//      AddItem2: 'Two' },
-//   source:
-//    { name: 'webView',
-//      deviceId: '8696A22C-716A-4212-8EB5-929A66B121ED' } }
+};
