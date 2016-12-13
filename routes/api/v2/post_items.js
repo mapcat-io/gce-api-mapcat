@@ -9,8 +9,6 @@ exports = module.exports = function(req, res) {
     var data = (req.method == 'POST') ? req.body : req.query,
         itemsToSave = [];
 
-        console.log(data);
-
     for (var key in data.items) {
       var uuid = utils.uuid();
       var obj = {
@@ -50,7 +48,7 @@ exports = module.exports = function(req, res) {
       obj["j"] = JSON.stringify(j);
       itemsToSave.push(obj);
     };
-    console.log(itemsToSave);
+    
     insert.data(itemsToSave).run(function(err, response) {
       if (err) {
         var message = 'Error saving items: ' + JSON.stringify(err);
