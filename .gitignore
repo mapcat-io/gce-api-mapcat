@@ -2,3 +2,7 @@
 .git
 node.log
 .env
+
+# Apple files
+
+.DS_Store
