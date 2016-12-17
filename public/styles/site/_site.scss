@@ -1,0 +1,114 @@
+/*# sourceMappingURL=site.css.map */
+
+body {
+  font-family: 'Open Sans';
+  -webkit-font-smoothing: antialiased;
+  text-shadow: rgba(0,0,0,.01) 0 0 1px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.brand {
+  font-family: 'Courgette', cursive;
+  font-size: 28px;
+  font-weight:400;
+  color: white;
+  float: left;
+  text-decoration: none;
+}
+
+.hero-wrapper {
+  min-height: 650px;
+  height: 100%;
+  margin-bottom: 0px;
+}
+
+.hero-wrapper.home {
+  background:linear-gradient(0deg, rgba(233, 85, 145, 1) 0%, rgba(246, 126, 139, 1) 100%);
+}
+
+.hero-wrapper.merchants {
+  background:#10627B;
+}
+
+.hero-wrapper .button {
+  margin-top: 20px;
+}
+
+.hero-wrapper h1 {
+  font-weight: 700;
+  font-size:40px;
+  color: white;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-light {
+  color: #ffffff;
+}
+
+.dark-blue {
+  background-color: #10627B;
+}
+
+.container.lg {
+  padding-top: 45px;
+  padding-bottom: 45px;
+}
+
+.container .row .columns img {
+  width: 100%;
+}
+
+.image-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brand-color {
+  color: #33C3F0;
+}
+
+.navbar {
+  height: 50px;
+  //margin-bottom: 140px;
+}
+
+.navbar ul > li {
+  float: left;
+  padding-left: 20px;
+}
+
+.nav-links {
+  float: right;
+  list-style: none;
+  margin-top: 12px;
+}
+
+.footer {
+  height: 50px;
+  font-size: 21px;
+}
+
+.footer ul > li {
+  float: left;
+  padding-left: 20px;
+  margin-bottom: 0px;
+}
+
+.footer-links {
+  float: right;
+  list-style: none;
+  margin-top: 11px;
+  margin-bottom: 0px;
+}
+
+#index-hero {
+  margin-top: 140px;
+}

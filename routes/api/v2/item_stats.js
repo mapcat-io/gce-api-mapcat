@@ -7,7 +7,6 @@ var db = initCrate();
 exports = module.exports = function(req, res) {
 
   var data = req.query;
-  console.log(data)
 
   if (data.t === 'profile' && data.u) {
     var query = db.Query('SELECT j, loc_name FROM items_big WHERE j like ?'),
