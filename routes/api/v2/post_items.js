@@ -2,21 +2,27 @@ var Crate = require('../../crate.js'),
     utils = require('../../utils');
 
 var db = initCrate(),
-    insert = db.Insert('items_big'),
-    insertRels = db.Insert('items_to_devices');
+    insertItemsBig = db.Insert('items_big'),
+    insertItemsToDevices = db.Insert('items_to_devices');
 
 exports = module.exports = function(req, res) {
   if (req.method == 'POST') {
     var data = (req.method == 'POST') ? req.body : req.query,
-        itemsToSave = [];
-    var deviceRels =[];
+        itemsToSaveItemsBig = [],
+        itemsToSaveItemsToDevices = [];
+
     for (var key in data.items) {
       var uuid = utils.uuid();
-      var obj = {
+      var objItemsBig = {
           "id": uuid,
           "itm_name": data.items[key],
           "loc_name": data.foursquare.name,
           "location": [data.foursquare.location.lng, data.foursquare.location.lat]
+        };
+      var objItemsToDevices = {
+          "item_id": uuid,
+          "device_id": data.source.deviceId || '',
+          "timestamp": Date.now()
         };
       var j = {
         "_id": {
@@ -46,33 +52,37 @@ exports = module.exports = function(req, res) {
           "deviceId": data.source.deviceId || ''
         }
       };
-      
-      obj["j"] = JSON.stringify(j);
-      itemsToSave.push(obj);
-      
-      if (typeof data.source.deviceId !== 'undefined' && data.source.deviceId !== null)
-      {
 
-      	var devObj = {
-		"item_id": uuid,
-		"device_id": data.source.deviceId,
-		"timestamp": Date.now()
-		};
-	deviceRels.push(devObj);
+      objItemsBig["j"] = JSON.stringify(j);
+      itemsToSaveItemsBig.push(objItemsBig);
+
+      if (typeof data.source.deviceId !== 'undefined' && data.source.deviceId !== null) {
+        itemsToSaveItemsToDevices.push(objItemsToDevices);
       }
     };
-    insertRels.data(deviceRels);
-    insert.data(itemsToSave).run(function(err, response) {
+
+    // save items to items_to_devices table
+    insertItemsToDevices.data(itemsToSaveItemsToDevices).run(function(err, response) {
       if (err) {
-        var message = 'Error saving items: ' + JSON.stringify(err);
+        var message = 'Error saving items to items_to_devices: ' + JSON.stringify(err);
+        console.log(message);
+      } else {
+        console.log('Saved items to items_to_devices.');
+      }
+    });
+
+    // save items to items_big table
+    insertItemsBig.data(itemsToSaveItemsBig).run(function(err, response) {
+      if (err) {
+        var message = 'Error saving items to items_big: ' + JSON.stringify(err);
         console.log(message);
         res.json({
           response: message
         });
       } else {
-        console.log('Saved items.');
+        console.log('Saved items to items_big.');
         res.json({
-          response: 'Saved items: ' + JSON.stringify(response)
+          response: 'Saved items to items_big: ' + JSON.stringify(response)
         });
       }
     });
