@@ -42,6 +42,9 @@ exports = module.exports = function(req, res) {
 
     jsn = JSON.parse(items_returned[i][3]);
 
+    if ( typeof jsn.location == 'undefined' || !jsn.location ) {
+      jsn.location = {};
+    };
     if ( typeof jsn.location.street == 'undefined' || !jsn.location.street ) {
       jsn.location.street = '';
     };

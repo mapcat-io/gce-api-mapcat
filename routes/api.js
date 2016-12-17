@@ -5,6 +5,15 @@ var express = require('express'),
 // Middleware specific to api router
 router.use(function(req, res, next) {
   console.log('API middleware.');
+  // allows api/v2 endpoints to pass without token, otherwise requires valid token
+  var data = req.query || '';
+  if (!req.originalUrl.includes("api/v2") && data.token !== process.env.API_KEY) {
+    var message = 'Not authorized to access this endpoint without valid credentials.'
+    console.log(message);
+    res.json({
+      response: message
+    });
+  };
   next();
 });
 

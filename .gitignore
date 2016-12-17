@@ -3,3 +3,7 @@
 node.log
 server.log
 .env
+
+# Apple files
+
+.DS_Store

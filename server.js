@@ -6,18 +6,19 @@ require('dotenv').load();
 // Base
 var express = require('express'),
     app = express(),
-    port = process.env.PORT || 3911;
+    port = process.env.SERVER_PORT || 3911;
 
+app.use(express.static('public'));
 app.use( bodyParser.json() );
 
 // Import routes
 var routes = {
   api: require('./routes/api'),
-  index: require('./routes/index')
+  views: require('./routes/views')
 };
 
 // Routes
-app.use('/', routes.index);
+app.use('/', routes.views);
 app.use('/api', routes.api);
 
 // Start server
