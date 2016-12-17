@@ -2,13 +2,14 @@ var Crate = require('../../crate.js'),
     utils = require('../../utils');
 
 var db = initCrate(),
-    insert = db.Insert('items_big');
+    insert = db.Insert('items_big'),
+    insertRels = db.Insert('items_to_devices');
 
 exports = module.exports = function(req, res) {
   if (req.method == 'POST') {
     var data = (req.method == 'POST') ? req.body : req.query,
         itemsToSave = [];
-
+    var deviceRels =[];
     for (var key in data.items) {
       var uuid = utils.uuid();
       var obj = {
@@ -45,10 +46,22 @@ exports = module.exports = function(req, res) {
           "deviceId": data.source.deviceId || ''
         }
       };
+      
       obj["j"] = JSON.stringify(j);
       itemsToSave.push(obj);
-    };
+      
+      if (typeof data.source.deviceId !== 'undefined' && data.source.deviceId !== null)
+      {
 
+      	var devObj = {
+		"item_id": uuid,
+		"device_id": data.source.deviceId,
+		"timestamp": Date.now()
+		};
+	deviceRels.push(devObj);
+      }
+    };
+    insertRels.data(deviceRels);
     insert.data(itemsToSave).run(function(err, response) {
       if (err) {
         var message = 'Error saving items: ' + JSON.stringify(err);
