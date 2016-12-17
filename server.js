@@ -6,7 +6,7 @@ require('dotenv').load();
 // Base
 var express = require('express'),
     app = express(),
-    port = process.env.PORT || 3911;
+    port = process.env.SERVER_PORT || 3911;
 
 app.use(express.static('public'));
 app.use( bodyParser.json() );

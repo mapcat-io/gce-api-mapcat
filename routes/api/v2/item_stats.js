@@ -22,8 +22,9 @@ exports = module.exports = function(req, res) {
       } else {
         console.log('Retrieved user item stats.');
 
-        var responseItems = [];
-        var count = response.rows.length;
+        var responseItems = [],
+            count = response.rows.length;
+            
         for (i = 0; i < count; i++) {
           responseItems.push(response.rows[i][1]);
         };

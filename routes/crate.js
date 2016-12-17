@@ -3,13 +3,12 @@ var Crate = require('cratejs');
 initCrate = function () {
   console.log('Initializing Crate DB.');
   var db = new Crate({
-    host: '127.0.0.1', //Defaults to localhost
-    port: 4200, //Defaults to 4200
-    // You can also send in a cluster of nodes
+    host: process.env.CRATE_HOST || '127.0.0.1',
+    port: process.env.CRATE_PORT || 4200,
     cluster: [
         {
-          host: '127.0.0.1',
-          port:4200
+          host: process.env.CRATE_HOST || '127.0.0.1',
+          port: process.env.CRATE_PORT || 4200
         },
     ]
   });
