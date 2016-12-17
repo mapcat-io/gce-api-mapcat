@@ -31,4 +31,4 @@ In order to merge changes and restart the server, follow these steps:
 - `cd ../api/gce-api-server` to get into the repository directory `/home/api/gce-api-mapcat`.
 - From inside the repository directory `/home/api/gce-api-mapcat`, use `git` to `fetch` and `merge` into the `master` branch.
 - Restart the Node server with `ps aux | grep -ie server.js | awk '{print $2}' | xargs kill -9;  nohup node server.js > server.log &`.
-- Check that the server has been restarted by visiting a url, such as [api.mapcat.io](http://api.mapcat.io/).
+- Check that the server has been restarted by visiting a url, such as [api.mapcat.io](http://api.mapcat.io:3911/).
