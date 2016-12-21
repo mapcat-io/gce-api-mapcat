@@ -7,7 +7,7 @@ var db = initCrate(),
 
 exports = module.exports = function(req, res) {
 
-  var q = '%'+req.query.q+'%' || '', // search term
+  var q = '%' + req.query.q.trim() + '%' || '', // search term
       u = req.query.u || '', // ios deviceId
       lat = req.query.lat || '',
       lng = req.query.long || '',
