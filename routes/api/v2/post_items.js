@@ -15,8 +15,8 @@ exports = module.exports = function(req, res) {
       var uuid = utils.uuid();
       var objItemsBig = {
           "id": uuid,
-          "itm_name": data.items[key],
-          "loc_name": data.foursquare.name,
+          "itm_name": data.items[key].toLowerCase(),
+          "loc_name": data.foursquare.name.toLowerCase(),
           "location": [data.foursquare.location.lng, data.foursquare.location.lat]
         };
       var objItemsToDevices = {
