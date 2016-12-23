@@ -19,11 +19,11 @@ exports = module.exports = function(req, res) {
       for (i = 0; i < response.rows.length; i++) {
         var item = response.rows[i];
         var obj = {
-          "name": item[0],
+          "name": item[2],
           "category": {
-            "thing": item[1]
+            "thing": item[0]
           }
-        }
+        };
         responseItems.push(obj);
       };
       res.json({
