@@ -1,7 +1,7 @@
 var Crate = require('../../crate.js');
 
 var db = initCrate(),
-    query = db.Query('SELECT * FROM top_things LIMIT 1000');
+    query = db.Query('SELECT * FROM top_things ORDER BY name ASC LIMIT 1000');
 
 exports = module.exports = function(req, res) {
 
