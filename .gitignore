@@ -1,6 +1,7 @@
 /node_modules
 .git
 node.log
+server.log
 .env
 
 # Apple files

@@ -52,6 +52,7 @@ exports = module.exports = function(req, res) {
           "deviceId": data.source.deviceId || ''
         }
       };
+
       objItemsBig["j"] = JSON.stringify(j);
       itemsToSaveItemsBig.push(objItemsBig);
 
