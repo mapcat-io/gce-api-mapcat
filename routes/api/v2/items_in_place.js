@@ -1,12 +1,12 @@
 var Crate = require('../../crate.js');
 
 var db = initCrate(),
-    query = db.Query('SELECT itm_name FROM items_big WHERE loc_name = ? LIMIT 1000');
+    query = db.Query('SELECT name FROM items_v4_test2 WHERE lochash = ? LIMIT 1000');
 
 exports = module.exports = function(req, res) {
 
   var data = req.query,
-      params = [data.q.toLowerCase()];
+      params = [data.lochash];
       
   query.execute(params, function(err, response) {
     if (err) {
