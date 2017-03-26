@@ -56,7 +56,8 @@ exports = module.exports = function(req, res) {
           things: [things_name],
           distance: [items_returned[i][6]],
           location: {
-            name: items_returned[i][2]
+            name: items_returned[i][2],
+	    lochash: items_returned[i][0]
           }
         };
       } else {
