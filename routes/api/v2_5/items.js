@@ -25,7 +25,7 @@ exports = module.exports = function(req, res) {
 
   async.series( [
     // Get the first table contents
-    function queryExecute( callback ) {
+    function _queryExecute( callback ) {
 
       var db = initCrate(),
         selectStr = "SELECT lochash, MAX(CONCAT(_score,'-',name)) AS name, ARBITRARY(locname) AS locname, ARBITRARY(lat) as lat, ARBITRARY(lng) as lng, " +
@@ -42,7 +42,7 @@ exports = module.exports = function(req, res) {
           //console.log(err.statusCode);
         }
 
-        if (res != null) {
+        if (res !== null) {
           items_returned = res.rows;
         } else {
           items_returned = [];
@@ -53,9 +53,9 @@ exports = module.exports = function(req, res) {
     }
 
   // Send the response
-  ], function ( error, results ) {
+  ], function _setResponse( error, results ) {
 
-    var modifiedItems = {};
+    var foundElements = {};
 
     for (var i = 0, len = items_returned.length; i < len; i++) {
 
@@ -64,45 +64,58 @@ exports = module.exports = function(req, res) {
       var locnameField = items_returned[i][2];
       var latField = items_returned[i][3];
       var lngField = items_returned[i][4];
-      var scoredDistField = items_returned[i][5];
+      // var scoredDistField = items_returned[i][5];  // unused.
       var distanceField = items_returned[i][6];
       var descriptionField = items_returned[i][7];
+
+      // typeIdField = 0 - for items
+      // typeIdField = 10 - for locations
+      // typeIdField > 10 - for SLUG.
       var typeIdField = items_returned[i][8];
 
       var mds = lochashField;
       var things_name = nameField.substr(nameField.indexOf('-') + 1);
 
-      if (!(mds in modifiedItems)) {
-        modifiedItems[mds] = {
+      if (!(mds in foundElements)) {
+        foundElements[mds] = {
           _id: {
             name: locnameField
           },
           type_id: [typeIdField],
-          coordinates: [lngField, latField],
-          things: [things_name],
+          coordinates: [[lngField, latField]],
+          // Set name from nameField for items and from description for locations and SLUGs.
+          things: typeIdField === 0 ? [things_name] : [descriptionField],
+          // Add description property if item.
+          description: typeIdField === 0 ? [descriptionField] : [''],
           distance: [distanceField],
           location: {
             name: locnameField,
 	          lochash: lochashField
           }
         };
+
       } else {
-        modifiedItems[mds].things.push(things_name);
-        modifiedItems[mds].coordinates.push([lngField, latField]);
-        modifiedItems[mds].distance.push(distanceField);
-      }
-    }
+        // Add as things to existing location.
+        foundElements[mds].type_id.push(typeIdField);
+        foundElements[mds].coordinates.push([lngField, latField]);
+        foundElements[mds].things.push(typeIdField === 0 ? things_name : descriptionField);
+        foundElements[mds].description.push(typeIdField === 0 ? descriptionField : '');
+        foundElements[mds].distance.push(distanceField);
+
+      } // End else.
+
+    } // End for.
 
     var responseItems=[];
 
-    for (var key in modifiedItems) {
-      if (modifiedItems.hasOwnProperty(key)) {
-        responseItems.push(modifiedItems[key]);
+    for (var key in foundElements) {
+      if (foundElements.hasOwnProperty(key)) {
+        responseItems.push(foundElements[key]);
       }
     }
 
     // Check hr and make human readable if set.
-    if (hr === 1) {
+    if (hr == 1) {
       var json = {"items":responseItems};
       var str  = "<pre>" +JSON.stringify(json, '', 4)+ "</pre>";
       res.send(str);
