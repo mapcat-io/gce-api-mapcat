@@ -11,7 +11,7 @@ exports = module.exports = function(req, res) {
       // Weight scores:
       name_ft = parseFloat(req.query.name_ft) || 0.75,
       locname_ft = parseFloat(req.query.locname_ft) || 3.0,
-      cattext_ft = parseFloat(req.query.cattext_ft) || 5.0,
+      // cattext_ft = parseFloat(req.query.cattext_ft) || 5.0,
       match_type = req.query.match_type || 'best_fields',
       matchTypes = ['best_fields', 'most_fields', 'cross_fields', 'phrase', 'phrase_prefix'],
       // Human readable:
@@ -29,13 +29,14 @@ exports = module.exports = function(req, res) {
 
       var db = initCrate(),
         selectStr = "SELECT lochash, MAX(CONCAT(_score,'-',name)) AS name, ARBITRARY(locname) AS locname, ARBITRARY(lat) as lat, ARBITRARY(lng) as lng, " +
-          "MAX(_score * (6000 - DISTANCE(lat_lng, [$1, $2]))) AS scored_dist, ARBITRARY(DISTANCE(lat_lng, [$1, $2])) AS distance " +
-          "FROM items_v4_test2 " +
-          "WHERE MATCH((name_ft $3, locname_ft $4, cattext_ft $5) , $6) USING " +match_type+ " AND DISTANCE(lat_lng, [$1, $2]) < 4828 " +
+          "MAX(_score * (6000 - DISTANCE(lat_lng, [$1, $2]))) AS scored_dist, ARBITRARY(DISTANCE(lat_lng, [$1, $2])) AS distance, " +
+          "ARBITRARY(description) AS description, ARBITRARY(type_id) AS type_id " +
+          "FROM items_v5 " +
+          "WHERE MATCH((name_ft $3, locname_ft $4) , $5) USING " +match_type+ " AND DISTANCE(lat_lng, [$1, $2]) < 4828 " +
           "GROUP BY lochash ORDER BY scored_dist DESC limit 20",
         query = db.Query(selectStr);
 
-      query.execute([lng, lat, name_ft, locname_ft, cattext_ft, q], function(err, res) {
+      query.execute([lng, lat, name_ft, locname_ft, q], function(err, res) {
 
         if (err) {
           //console.log(err.statusCode);
@@ -57,25 +58,38 @@ exports = module.exports = function(req, res) {
     var modifiedItems = {};
 
     for (var i = 0, len = items_returned.length; i < len; i++) {
-      var mds = items_returned[i][0],
-          things_name = items_returned[i][1].substr(items_returned[i][1].indexOf('-') + 1);
+
+      var lochashField = items_returned[i][0];
+      var nameField = items_returned[i][1];
+      var locnameField = items_returned[i][2];
+      var latField = items_returned[i][3];
+      var lngField = items_returned[i][4];
+      var scoredDistField = items_returned[i][5];
+      var distanceField = items_returned[i][6];
+      var descriptionField = items_returned[i][7];
+      var typeIdField = items_returned[i][8];
+
+      var mds = lochashField;
+      var things_name = nameField.substr(nameField.indexOf('-') + 1);
+
       if (!(mds in modifiedItems)) {
         modifiedItems[mds] = {
           _id: {
-            name: items_returned[i][2]
+            name: locnameField
           },
-          coordinates: [items_returned[i][4], items_returned[i][3]],
+          type_id: [typeIdField],
+          coordinates: [lngField, latField],
           things: [things_name],
-          distance: [items_returned[i][6]],
+          distance: [distanceField],
           location: {
-            name: items_returned[i][2],
-	    lochash: items_returned[i][0]
+            name: locnameField,
+	          lochash: lochashField
           }
         };
       } else {
         modifiedItems[mds].things.push(things_name);
-        modifiedItems[mds].coordinates.push([items_returned[i][4], items_returned[i][3]]);
-        modifiedItems[mds].distance.push(items_returned[i][6]);
+        modifiedItems[mds].coordinates.push([lngField, latField]);
+        modifiedItems[mds].distance.push(distanceField);
       }
     }
 
@@ -88,14 +102,12 @@ exports = module.exports = function(req, res) {
     }
 
     // Check hr and make human readable if set.
-    if (hr == 1) {
+    if (hr === 1) {
       var json = {"items":responseItems};
       var str  = "<pre>" +JSON.stringify(json, '', 4)+ "</pre>";
       res.send(str);
     } else {
-      res.json({
-        'items' : responseItems
-      });
+      res.json({'items' : responseItems});
     }
 
   });
