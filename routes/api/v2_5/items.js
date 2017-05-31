@@ -74,7 +74,8 @@ exports = module.exports = function(req, res) {
       var typeIdField = items_returned[i][8];
 
       var mds = lochashField;
-      var things_name = nameField.substr(nameField.indexOf('-') + 1);
+      // var things_name = nameField.substr(nameField.indexOf('-') + 1);
+      var things_name = nameField;
 
       if (!(mds in foundElements)) {
         foundElements[mds] = {
