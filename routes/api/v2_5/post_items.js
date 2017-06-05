@@ -2,7 +2,7 @@ var Crate = require('../../crate.js'),
     utils = require('../../utils');
 
 var db = initCrate(),
-    insertItemsBig = db.Insert('items_v4_test2'),
+    insertItemsBig = db.Insert('items_v5'),
     insertItemsToDevices = db.Insert('items_to_devices');
 
 var crypto = require('crypto');
@@ -54,10 +54,7 @@ function normalizeLocation(name, lat, lng, itemNormalize) {
   name = name.replace("<", " ");
 
   // name=str_ireplace(array(";",".",",","^","~","!","@","#","$","%","&","*","(",")","-","–","—","=","_","+","]","[","{","}",'"',"'","/","\\",">","<")," ",name);
-
-
   name = " " +name.toLowerCase() + " ";
-
   // name=" ".strtolower(name)." ";
 
   name = name.replace(" co ", "");
@@ -75,7 +72,6 @@ function normalizeLocation(name, lat, lng, itemNormalize) {
   // @TODO What here??
   // name=trim(name);
 
-
   if(!itemNormalize) {
     return name + "_" + lat + "_" + lng;
   }
@@ -83,45 +79,43 @@ function normalizeLocation(name, lat, lng, itemNormalize) {
     return name;
 }
 
-
 exports = module.exports = function(req, res) {
-  if (req.method == 'POST') {
-    var data = (req.method == 'POST') ? req.body : req.query,
+  if (req.method === 'POST') {
+    var data = (req.method === 'POST') ? req.body : req.query,
         itemsToSaveItemsBig = [],
         itemsToSaveItemsToDevices = [];
 
     for (var key in data.items) {
       var uuid = utils.uuid();
 
-      var locstring = normalizeLocation(data.foursquare.name,data.foursquare.location.lat,data.foursquare.location.lng,false);
+      var locstring = normalizeLocation(data.foursquare.name, data.foursquare.location.lat, data.foursquare.location.lng, false);
       var lochash = crypto.createHash('md5').update(locstring).digest("hex").toLowerCase();
       var item_hash_string = normalizeLocation(data.items[key],0,0,true) + "_" + locstring;
       var item_hash = crypto.createHash('md5').update(item_hash_string).digest("hex").toLowerCase();
-	
-
 
       var objItemsBig = {
-        
-          "name": data.items[key],
-          "locname": data.foursquare.name,
-          "lat_lng": [data.foursquare.location.lng, data.foursquare.location.lat],
-	  "lat": data.foursquare.location.lat,
-	  "lng": data.foursquare.location.lng,
-	  "timestamp": Date.now(),
-	  "categories": [-1],
-          "cattext": '',
-	  "description": '',
-	  "image_url": '',
-	  "addon_info": {},
-	  "item_hash": item_hash,
-          "lochash": lochash
-        };
+        "name": data.items[key],
+        "locname": data.foursquare.name,
+        "lat_lng": [data.foursquare.location.lng, data.foursquare.location.lat],
+	      "lat": data.foursquare.location.lat,
+	      "lng": data.foursquare.location.lng,
+	      "timestamp": Date.now(),
+	      "categories": [-1],
+	      "description": '',
+	      "image_url": '',
+	      "addon_info": {},
+	      "item_hash": item_hash,
+        "lochash": lochash,
+        "type_id": 0
+      };
+
       var objItemsToDevices = {
           "item_id": uuid,
           "device_id": data.source.deviceId || '',
           "timestamp": Date.now()
         };
-      var j = {
+
+      /*var j = {
         "_id": {
           "$oid": uuid
         },
@@ -142,13 +136,13 @@ exports = module.exports = function(req, res) {
           "twitterId": data.foursquare.contact.twitter,
           "facebookId": data.foursquare.contact.facebook,
           "categoryName": data.foursquare.categories[0].name,
-          "siteUrl": data.foursquare.url,
+          "siteUrl": data.foursquare.url
         },
         "source": {
           "name": data.source.name,
           "deviceId": data.source.deviceId || ''
         }
-      };
+      };*/
 
 //      objItemsBig["addon_info"] = JSON.stringify(j);
 	
@@ -157,7 +151,8 @@ exports = module.exports = function(req, res) {
       if (typeof data.source.deviceId !== 'undefined' && data.source.deviceId !== null) {
         itemsToSaveItemsToDevices.push(objItemsToDevices);
       }
-    };
+
+    } // End for.
 
     // save items to items_to_devices table
     insertItemsToDevices.data(itemsToSaveItemsToDevices).run(function(err, response) {
