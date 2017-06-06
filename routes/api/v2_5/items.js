@@ -74,8 +74,7 @@ exports = module.exports = function(req, res) {
       var typeIdField = items_returned[i][8];
 
       var mds = lochashField;
-      // var things_name = nameField.substr(nameField.indexOf('-') + 1);
-      var things_name = nameField;
+      var things_name = nameField.substr(nameField.indexOf('-') + 1);
 
       if (!(mds in foundElements)) {
         foundElements[mds] = {
@@ -85,9 +84,9 @@ exports = module.exports = function(req, res) {
           type_id: [typeIdField],
           coordinates: [[lngField, latField]],
           // Set name from nameField for items and from description for locations and SLUGs.
-          things: typeIdField === 0 ? [things_name] : [descriptionField],
+          things: typeIdField <= 10 ? [things_name] : [descriptionField],
           // Add description property if item.
-          description: typeIdField === 0 ? [descriptionField] : [''],
+          description: typeIdField > 0 ? [''] : [descriptionField],
           distance: [distanceField],
           location: {
             name: locnameField,
@@ -99,8 +98,8 @@ exports = module.exports = function(req, res) {
         // Add as things to existing location.
         foundElements[mds].type_id.push(typeIdField);
         foundElements[mds].coordinates.push([lngField, latField]);
-        foundElements[mds].things.push(typeIdField === 0 ? things_name : descriptionField);
-        foundElements[mds].description.push(typeIdField === 0 ? descriptionField : '');
+        foundElements[mds].things.push(typeIdField <= 10 ? things_name : descriptionField);
+        foundElements[mds].description.push(typeIdField > 0 ? '' : descriptionField);
         foundElements[mds].distance.push(distanceField);
 
       } // End else.
