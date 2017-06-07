@@ -7,13 +7,13 @@ router.use(function(req, res, next) {
   console.log('API middleware.');
   // allows api/v2 endpoints to pass without token, otherwise requires valid token
   var data = req.query || '';
-  if (!(req.originalUrl.includes("api/v2") || req.originalUrl.includes("api/v2_5")) && data.token !== process.env.API_KEY) {
+  if (!(req.originalUrl.includes("api/v2") || req.originalUrl.includes("api/v2.5")) && data.token !== process.env.API_KEY) {
     var message = 'Not authorized to access this endpoint without valid credentials.'
     console.log(message);
     res.json({
       response: message
     });
-  };
+  }
   next();
 });
 
@@ -34,7 +34,7 @@ var api = {
     // backwards compatible api endpoints
     items_in_place: require('./api/v2_5/items_in_place'),
     items: require('./api/v2_5/items'),
-    post_items: require('./api/v2_5/post_items'),
+    post_items: require('./api/v2_5/post_items')
   }
 };
 

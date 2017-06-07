@@ -1,105 +1,36 @@
 var Crate = require('../../crate.js'),
-    utils = require('../../utils');
+    // utils = require('../../utils'),
+    geo_utils = require('../../geo_utils');
 
-var db = initCrate(),
-    insertItemsBig = db.Insert('items_v5'),
-    insertItemsToDevices = db.Insert('items_to_devices');
+var db = initCrate();
+var insertItemsV5 = db.Insert('items_v5');
+var insertItemsToDevices = db.Insert('items_to_devices');
 
 var crypto = require('crypto');
-
-function normalizeLocation(name, lat, lng, itemNormalize) {
-  if (itemNormalize === undefined) itemNormalize = false;
-
-  lat = +lat.toFixed(3);
-  lng = +lng.toFixed(3);
-
-  // lat=number_format(round(lat,3),3,".","");
-  // lng=number_format(round(lng,3),3,".","");
-
-  name=" " +name+ " ";
-
-  name = name.replace(" Co-op ", "");
-
-  // name=str_ireplace(array(" Co-op "),"",name);
-
-  name = name.replace(";", " ");
-  name = name.replace(".", " ");
-  name = name.replace(",", " ");
-  name = name.replace("^", " ");
-  name = name.replace("~", " ");
-  name = name.replace("!", " ");
-  name = name.replace("@", " ");
-  name = name.replace("#", " ");
-  name = name.replace("$", " ");
-  name = name.replace("%", " ");
-  name = name.replace("&", " ");
-  name = name.replace("*", " ");
-  name = name.replace("(", " ");
-  name = name.replace(")", " ");
-  name = name.replace("-", " ");
-  name = name.replace("–", " ");
-  name = name.replace("—", " ");
-  name = name.replace("=", " ");
-  name = name.replace("_", " ");
-  name = name.replace("+", " ");
-  name = name.replace("]", " ");
-  name = name.replace("[", " ");
-  name = name.replace("{", " ");
-  name = name.replace("}", " ");
-  name = name.replace('"', " ");
-  name = name.replace("'", " ");
-  name = name.replace("/", " ");
-  name = name.replace("\\", " ");
-  name = name.replace(">", " ");
-  name = name.replace("<", " ");
-
-  // name=str_ireplace(array(";",".",",","^","~","!","@","#","$","%","&","*","(",")","-","–","—","=","_","+","]","[","{","}",'"',"'","/","\\",">","<")," ",name);
-  name = " " +name.toLowerCase() + " ";
-  // name=" ".strtolower(name)." ";
-
-  name = name.replace(" co ", "");
-  name = name.replace(" and ", "");
-  name = name.replace(" inc ", "");
-  name = name.replace(" ltd ", "");
-  name = name.replace(" l t d ", "");
-  name = name.replace(" usa ", "");
-  name = name.replace(" us ", "");
-  name = name.replace(" coop ", "");
-  //name=str_ireplace(array(" co "," and "," inc ", " ltd ", " l t d ", " USA ", " US ", "coop"),"",name);
-  name = name.replace(" ", "");
-  // name=str_replace(" ","",name);
-
-  // @TODO What here??
-  // name=trim(name);
-
-  if(!itemNormalize) {
-    return name + "_" + lat + "_" + lng;
-  }
-  else
-    return name;
-}
 
 exports = module.exports = function(req, res) {
   if (req.method === 'POST') {
     var data = (req.method === 'POST') ? req.body : req.query,
-        itemsToSaveItemsBig = [],
+        itemsToSaveItemsV5 = [],
         itemsToSaveItemsToDevices = [];
 
     for (var key in data.items) {
-      var uuid = utils.uuid();
+      // var uuid = utils.uuid();
 
-      var locstring = normalizeLocation(data.foursquare.name, data.foursquare.location.lat, data.foursquare.location.lng, false);
+      var locstring = geo_utils.normalizeLocation(data.foursquare.name, data.foursquare.location.lat, data.foursquare.location.lng, false);
       var lochash = crypto.createHash('md5').update(locstring).digest("hex").toLowerCase();
-      var item_hash_string = normalizeLocation(data.items[key],0,0,true) + "_" + locstring;
+      var item_hash_string = geo_utils.normalizeLocation(data.items[key],0,0,true) + "_" + locstring;
       var item_hash = crypto.createHash('md5').update(item_hash_string).digest("hex").toLowerCase();
 
-      var objItemsBig = {
+      var timestamp = Date.now();
+
+      var objItemsV5 = {
         "name": data.items[key],
         "locname": data.foursquare.name,
         "lat_lng": [data.foursquare.location.lng, data.foursquare.location.lat],
 	      "lat": data.foursquare.location.lat,
 	      "lng": data.foursquare.location.lng,
-	      "timestamp": Date.now(),
+	      "timestamp": timestamp,
 	      "categories": [-1],
 	      "description": '',
 	      "image_url": '',
@@ -110,9 +41,9 @@ exports = module.exports = function(req, res) {
       };
 
       var objItemsToDevices = {
-          "item_id": uuid,
+          "item_id": item_hash,
           "device_id": data.source.deviceId || '',
-          "timestamp": Date.now()
+          "timestamp": timestamp
         };
 
       /*var j = {
@@ -144,9 +75,9 @@ exports = module.exports = function(req, res) {
         }
       };*/
 
-//      objItemsBig["addon_info"] = JSON.stringify(j);
+//      objItemsV5["addon_info"] = JSON.stringify(j);
 	
-      itemsToSaveItemsBig.push(objItemsBig);
+      itemsToSaveItemsV5.push(objItemsV5);
 
       if (typeof data.source.deviceId !== 'undefined' && data.source.deviceId !== null) {
         itemsToSaveItemsToDevices.push(objItemsToDevices);
@@ -164,18 +95,18 @@ exports = module.exports = function(req, res) {
       }
     });
 
-    // save items to items_big table
-    insertItemsBig.data(itemsToSaveItemsBig).run(function(err, response) {
+    // save items to items_v5 table
+    insertItemsV5.data(itemsToSaveItemsV5).run(function(err, response) {
       if (err) {
-        var message = 'Error saving items to items_big: ' + JSON.stringify(err);
+        var message = 'Error saving items to items_v5: ' + JSON.stringify(err);
         console.log(message);
         res.json({
           response: message
         });
       } else {
-        console.log('Saved items to items_big.');
+        console.log('Saved items to items_v5.');
         res.json({
-          response: 'Saved items to items_big: ' + JSON.stringify(response)
+          response: 'Saved items to items_v5: ' + JSON.stringify(response)
         });
       }
     });
