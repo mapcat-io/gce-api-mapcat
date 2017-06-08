@@ -22,34 +22,36 @@ router.use(function(req, res, next) {
 var api = {
   v2: {
     // backwards compatible api endpoints
-    item_stats: require('./api/v2/item_stats'),
-    items_in_place: require('./api/v2/items_in_place'),
     items: require('./api/v2/items'),
+    items_in_place: require('./api/v2/items_in_place'),
     places: require('./api/v2/places'),
-    post_feedback: require('./api/v2/post_feedback'),
-    post_items: require('./api/v2/post_items'),
-    top_things: require('./api/v2/top_things')
+    top_things: require('./api/v2/top_things'),
+    post_feedback: require('./api/v2/post_feedback')
+    // post_items: require('./api/v2/post_items'),
+    // item_stats: require('./api/v2/item_stats'),
   },
   v2_5: {
     // backwards compatible api endpoints
-    items_in_place: require('./api/v2_5/items_in_place'),
     items: require('./api/v2_5/items'),
-    post_items: require('./api/v2_5/post_items')
+    items_in_place: require('./api/v2_5/items_in_place'),
+    post_items: require('./api/v2_5/post_items'),
+    item_stats: require('./api/v2_5/item_stats')
   }
 };
 
 // V2 API routes
-router.get('/v2/item-stats', api.v2.item_stats);
-router.get('/v2/items-in-place', api.v2.items_in_place);
 router.get('/v2/items', api.v2.items);
+router.get('/v2/items-in-place', api.v2.items_in_place);
+router.post('/v2/post-items', api.v2_5.post_items);
+router.get('/v2/item-stats', api.v2_5.item_stats);
 router.get('/v2/places', api.v2.places);
-router.all('/v2/post-feedback', api.v2.post_feedback);
-router.post('/v2/post-items', api.v2.post_items);
 router.get('/v2/top-things', api.v2.top_things);
+router.all('/v2/post-feedback', api.v2.post_feedback);
 
 // V2.5 API routes
-router.get('/v2.5/items-in-place', api.v2_5.items_in_place);
 router.get('/v2.5/items', api.v2_5.items);
+router.get('/v2.5/items-in-place', api.v2_5.items_in_place);
 router.post('/v2.5/post-items', api.v2_5.post_items);
+router.get('/v2.5/item-stats', api.v2_5.item_stats);
 
 module.exports = router;
