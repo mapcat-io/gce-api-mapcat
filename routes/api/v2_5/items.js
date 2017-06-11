@@ -33,7 +33,7 @@ exports = module.exports = function(req, res) {
           "ARBITRARY(description) AS description, ARBITRARY(type_id) AS type_id " +
           "FROM items_v5 " +
           "WHERE MATCH((name_ft $3, locname_ft $4) , $5) USING " +match_type+ " AND DISTANCE(lat_lng, [$1, $2]) < 4828 " +
-          "GROUP BY lochash ORDER BY scored_dist DESC limit 20",
+          "GROUP BY lochash ORDER BY scored_dist DESC limit 50",
         query = db.Query(selectStr);
 
       query.execute([lng, lat, name_ft, locname_ft, q], function(err, res) {
@@ -82,7 +82,7 @@ exports = module.exports = function(req, res) {
             name: locnameField
           },
           type_id: [typeIdField],
-          coordinates: [[lngField, latField]],
+          coordinates: [lngField, latField],
           // Set name from nameField for items and from description for locations and SLUGs.
           things: typeIdField <= 10 ? [things_name] : [descriptionField],
           // Add description property if item.
