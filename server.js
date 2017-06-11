@@ -7,8 +7,9 @@ require('dotenv').load();
 var express = require('express'),
     app = express(),
     port = process.env.SERVER_PORT || 3911;
-
+var cors = require('cors');
 app.use(express.static('public'));
+app.use(cors());
 app.use( bodyParser.json() );
 
 // Import routes
