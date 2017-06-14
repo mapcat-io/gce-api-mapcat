@@ -36,6 +36,13 @@ var api = {
     items_in_place: require('./api/v2_5/items_in_place'),
     post_items: require('./api/v2_5/post_items'),
     item_stats: require('./api/v2_5/item_stats')
+  },
+  v2_6: {
+    // backwards compatible api endpoints
+    items: require('./api/v2_6/items'),
+    items_in_place: require('./api/v2_6/items_in_place'),
+    post_items: require('./api/v2_6/post_items'),
+    item_stats: require('./api/v2_6/item_stats')
   }
 };
 
@@ -53,5 +60,11 @@ router.get('/v2.5/items', api.v2_5.items);
 router.get('/v2.5/items-in-place', api.v2_5.items_in_place);
 router.post('/v2.5/post-items', api.v2_5.post_items);
 router.get('/v2.5/item-stats', api.v2_5.item_stats);
+
+// V2.6 API routes
+router.get('/v2.6/items', api.v2_6.items);
+router.get('/v2.6/items-in-place', api.v2_6.items_in_place);
+router.post('/v2.6/post-items', api.v2_6.post_items);
+router.get('/v2.6/item-stats', api.v2_6.item_stats);
 
 module.exports = router;
