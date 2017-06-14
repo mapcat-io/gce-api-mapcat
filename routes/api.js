@@ -49,8 +49,8 @@ var api = {
 // V2 API routes
 router.get('/v2/items', api.v2.items);
 router.get('/v2/items-in-place', api.v2.items_in_place);
-router.post('/v2/post-items', api.v2_5.post_items);
-router.get('/v2/item-stats', api.v2_5.item_stats);
+router.post('/v2/post-items', api.v2_6.post_items);
+router.get('/v2/item-stats', api.v2_6.item_stats);
 router.get('/v2/places', api.v2.places);
 router.get('/v2/top-things', api.v2.top_things);
 router.all('/v2/post-feedback', api.v2.post_feedback);
